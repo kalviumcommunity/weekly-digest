@@ -1,29 +1,45 @@
+"""
+🚀 Weekly Tech Digest Scraper - Core Data Extraction Module
+This module handles fetching data from Hacker News and DEV.to, 
+calculating engagement, and deduplicating cross-platform articles.
+"""
+
 import requests
 import time
+import logging
 from fuzzywuzzy import fuzz
 
-def fetch_hackernews(limit=20) -> list[dict]:
+# Configure basic logging for internal monitoring
+logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
+
+def fetch_hackernews(limit: int = 20) -> list[dict]:
     """
-    Fetch the top story IDs from the Hacker News Firebase API.
-
+    📥 Fetches top stories from Hacker News using the Firebase API.
+    
+    The process involves:
+    1. Grabbing a list of top story IDs.
+    2. Fetching individual details for each ID.
+    
     Args:
-        limit (int): Number of stories to fetch. Defaults to 20.
-
+        limit (int): Number of top stories to inspect. Defaults to 20.
     Returns:
-        list[dict]: A list of dictionary objects representing Hacker News stories.
+        list[dict]: Normalized article data.
     """
     session = requests.Session()
-    # Fetch the top story IDs from the Firebase API
+    adapter = requests.adapters.HTTPAdapter(max_retries=3) # Add retries for stability
+    session.mount('https://', adapter)
+    
     try:
+        # Step 1: Get the current top 500 story IDs
         response = session.get('https://hacker-news.firebaseio.com/v0/topstories.json', timeout=10)
         response.raise_for_status()
         story_ids = response.json()
     except Exception as e:
-        print(f"Error fetching Hacker News top stories: {e}")
+        logging.error(f"❌ Failed to reach HN API: {e}")
         return []
 
     articles = []
-    # For each of the first limit IDs, fetch the item JSON
+    # Step 2: Fetch details for the first 'limit' stories
     for story_id in story_ids[:limit]:
         try:
             item_url = f'https://hacker-news.firebaseio.com/v0/item/{story_id}.json'
@@ -31,51 +47,52 @@ def fetch_hackernews(limit=20) -> list[dict]:
             item_response.raise_for_status()
             item = item_response.json()
 
-            # Skip items where type is not story or where url is missing
+            # Filter: We only want 'stories' that have external URLs
             if not item or item.get('type') != 'story' or 'url' not in item:
                 continue
 
-            # Return a list of dicts with specified keys
+            # Standardize the data structure
             articles.append({
                 'title': item.get('title'),
                 'url': item.get('url'),
                 'votes': item.get('score', 0),
                 'comments': item.get('descendants', 0),
-                'tags': [],  # HN has no tags
+                'tags': [],  # HN doesn't provide tags natively
                 'platform': 'Hacker News'
             })
-            # Add a time.sleep(0.05) between item fetches to be a polite API consumer
+            
+            # Rate limiting: Be polite to the API (50ms gap)
             time.sleep(0.05)
+            
         except Exception as e:
-            # Wrap each item fetch in a try/except and skip failed items with a printed warning
-            print(f"Warning: Failed to fetch HN item {story_id}: {e}")
+            # If one story fails, log it but don't crash the entire list
+            logging.warning(f"⚠️ Skipping HN item {story_id} due to error: {e}")
             continue
 
     return articles
 
-def fetch_devto(limit=20) -> list[dict]:
+def fetch_devto(limit: int = 20) -> list[dict]:
     """
-    Fetch the top articles from the DEV.to API.
-
+    📥 Fetches top articles from DEV.to in a single batch call.
+    
     Args:
-        limit (int): Number of articles to fetch. Defaults to 20.
-
+        limit (int): Number of top articles to fetch. Defaults to 20.
     Returns:
-        list[dict]: A list of dictionary objects representing DEV.to articles.
+        list[dict]: Normalized article data.
     """
+    # DEV.to API allows fetching top articles directly with pagination/limit
     url = f'https://dev.to/api/articles?top=1&per_page={limit}'
     try:
-        # Make a single GET to DEV.to top articles endpoint
         response = requests.get(url, timeout=10)
-        # Handle non-200 responses by raising a descriptive exception
         response.raise_for_status()
         data = response.json()
     except Exception as e:
-        raise Exception(f"Error fetching DEV.to articles: {e}")
+        # If the API call fails, we let the caller know so they can decide how to handle it
+        raise Exception(f"❌ DEV.to API request failed: {e}")
 
+    # Transform DEV.to specific fields into our internal format
     articles = []
     for item in data:
-        # Return a list of dicts with the same keys
         articles.append({
             'title': item.get('title'),
             'url': item.get('canonical_url'),
@@ -88,53 +105,52 @@ def fetch_devto(limit=20) -> list[dict]:
 
 def calculate_engagement(article: dict) -> float:
     """
-    Calculate an engagement score based on votes and comments.
-
+    ⚖️ Calculates the priority score based on user interaction.
+    
+    Formula: (Votes * 1.0) + (Comments * 1.5)
+    Note: Comments are weighted higher (1.5x) as they represent deeper engagement.
+    
     Args:
-        article (dict): The article dictionary object.
-
+        article (dict): The article to score.
     Returns:
-        float: The calculated engagement score.
+        float: The final engagement score.
     """
-    # Apply the formula: score = (votes * 1.0) + (comments * 1.5)
     votes = article.get('votes', 0)
     comments = article.get('comments', 0)
     score = (votes * 1.0) + (comments * 1.5)
     
-    # Add this score as an engagement_score key directly on the article dict
+    # Store the score directly on the object for easier sorting later
     article['engagement_score'] = score
     return score
 
 def deduplicate(articles: list[dict], threshold: int = 80) -> list[dict]:
     """
-    Deduplicate a list of articles based on title similarity.
-
+    🧹 Removes duplicate articles across different platforms using fuzzy title matching.
+    
     Args:
-        articles (list[dict]): The list of articles to deduplicate.
-        threshold (int): Similarity threshold for deduplication. Defaults to 80.
-
+        articles (list[dict]): The raw combined list of articles.
+        threshold (int): Similarity score (0-100) to trigger a duplicate detection.
     Returns:
-        list[dict]: A deduplicated list of articles.
+        list[dict]: A clean list with the 'better' (higher engagement) version of each story.
     """
     kept_articles = []
     
-    # Use a greedy approach: iterate in order
     for article in articles:
         is_duplicate = False
-        # For each article, compare its title against all previously seen titles
+        # Compare current article against everything we've already decided to keep
         for kept in kept_articles:
+            # We use token_sort_ratio to ignore word order differences
             similarity = fuzz.token_sort_ratio(article['title'], kept['title'])
-            # If similarity is above threshold, treat as duplicates
+            
             if similarity > threshold:
                 is_duplicate = True
-                # Keep only the one with the higher engagement_score
+                # Conflict resolution: Keep the version with higher engagement
                 if article['engagement_score'] > kept['engagement_score']:
-                    # Replace the existing article in the kept list
                     kept_articles.remove(kept)
                     kept_articles.append(article)
                 break
         
-        # If not a duplicate or it replaced a duplicate, it was already handled
+        # If it's a unique story, add it to our collection
         if not is_duplicate:
             kept_articles.append(article)
             
@@ -142,44 +158,39 @@ def deduplicate(articles: list[dict], threshold: int = 80) -> list[dict]:
 
 def get_top_articles(top_n: int = 10) -> tuple[list[dict], int]:
     """
-    Combine Hacker News and DEV.to articles, deduplicate and return top results.
-
-    Args:
-        top_n (int): Number of top articles to return. Defaults to 10.
-
+    ⚙️ The main coordination function for data collection.
+    
     Returns:
-        tuple[list[dict], int]: A tuple containing the sorted and deduplicated list of top articles 
-                               and the total number of articles fetched before deduplication.
+        tuple[list[dict], int]: (Top N articles, Total fetched count)
     """
-    # Call fetch_hackernews() and fetch_devto()
+    # 1. Fetch from multiple sources with individual error handling
     try:
         hn_articles = fetch_hackernews()
     except Exception as e:
-        print(f"Warning: Hacker News API is temporarily down: {e}")
+        logging.error(f"⚠️ HN integration stalled: {e}")
         hn_articles = []
 
     try:
         dev_articles = fetch_devto()
     except Exception as e:
-        print(f"Warning: DEV.to API is temporarily down: {e}")
+        logging.error(f"⚠️ DEV.to integration stalled: {e}")
         dev_articles = []
     
-    # If both return empty, raise a RuntimeError
+    # 2. Critical Check: Fail if there is no data at all
     if not hn_articles and not dev_articles:
-        raise RuntimeError("Both sources returned no data. Aborting report generation.")
+        raise RuntimeError("🚫 All sources returned no data. Aborting pipeline.")
     
     combined = hn_articles + dev_articles
     total_fetched = len(combined)
     
-    # Call calculate_engagement() on every article in the combined list
+    # 3. Process: Score and Deduplicate
     for article in combined:
         calculate_engagement(article)
     
-    # Call deduplicate() on the combined list
     deduplicated = deduplicate(combined)
     
-    # Sort by engagement_score descending
+    # 4. Final Ranking: Sort by score (descending)
     deduplicated.sort(key=lambda x: x['engagement_score'], reverse=True)
     
-    # Return the top top_n articles and the total count
+    # 5. Output the result set
     return deduplicated[:top_n], total_fetched
