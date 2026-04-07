@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Tech Digest</title>
+    <style>
+        :root {
+            --hn-color: #ff6600;
+            --dev-color: #3b49df;
+            --bg-color: #ffffff;
+            --border-color: #e0e0e0;
+            --text-main: #2d3436;
+            --text-muted: #636e72;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 20px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            color: var(--text-main);
+        }
+
+        header p {
+            color: var(--text-muted);
+            margin: 10px 0 0;
+        }
+
+        .article-card {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: flex-start;
+            transition: transform 0.2s ease;
+        }
+
+        .article-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .rank {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-muted);
+            margin-right: 20px;
+            min-width: 30px;
+        }
+
+        .content {
+            flex-grow: 1;
+        }
+
+        .title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0 0 10px 0;
+            display: block;
+            text-decoration: none;
+            color: var(--text-main);
+        }
+
+        .title:hover {
+            color: var(--dev-color);
+        }
+
+        .meta {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .badge {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .badge-hn { background-color: var(--hn-color); }
+        .badge-dev { background-color: var(--dev-color); }
+
+        .stats {
+            display: flex;
+            gap: 12px;
+        }
+
+        .score-info {
+            font-size: 0.85rem;
+            font-style: italic;
+            color: var(--text-muted);
+        }
+
+        .tags {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tag-pill {
+            background-color: #f0f2f5;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        footer {
+            margin-top: 60px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Weekly Tech Digest</h1>
+            <p>Generated on Tuesday, 07 April 2026 at 11:20</p>
+        </header>
+
+        <main>
+            
+            <div class="article-card">
+                <div class="rank">1</div>
+                <div class="content">
+                    <a href="https://www.newyorker.com/magazine/2026/04/13/sam-altman-may-control-our-future-can-he-be-trusted" class="title" target="_blank">Sam Altman may control our future – can he be trusted?</a>
+                    <div class="meta">
+                        <span class="badge badge-hn">
+                            Hacker News
+                        </span>
+                        <div class="stats">
+                            <span>↑ 1158</span>
+                            <span>💬 442</span>
+                        </div>
+                        <span class="score-info">Engagement: 1821.0</span>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="article-card">
+                <div class="rank">2</div>
+                <div class="content">
+                    <a href="https://github.com/anthropics/claude-code/issues/42796" class="title" target="_blank">Issue: Claude Code is unusable for complex engineering tasks with Feb updates</a>
+                    <div class="meta">
+                        <span class="badge badge-hn">
+                            Hacker News
+                        </span>
+                        <div class="stats">
+                            <span>↑ 915</span>
+                            <span>💬 521</span>
+                        </div>
+                        <span class="score-info">Engagement: 1696.5</span>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="article-card">
+                <div class="rank">3</div>
+                <div class="content">
+                    <a href="https://words.filippo.io/crqc-timeline/" class="title" target="_blank">A cryptography engineer's perspective on quantum computing timelines</a>
+                    <div class="meta">
+                        <span class="badge badge-hn">
+                            Hacker News
+                        </span>
+                        <div class="stats">
+                            <span>↑ 411</span>
+                            <span>💬 167</span>
+                        </div>
+                        <span class="score-info">Engagement: 661.5</span>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="article-card">
+                <div class="rank">4</div>
+                <div class="content">
+                    <a href="https://belief.horse/notes/what-being-ripped-off-taught-me/" class="title" target="_blank">What being ripped off taught me</a>
+                    <div class="meta">
+                        <span class="badge badge-hn">
+                            Hacker News
+                        </span>
+                        <div class="stats">
+                            <span>↑ 370</span>
+                            <span>💬 190</span>
+                        </div>
+                        <span class="score-info">Engagement: 655.0</span>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="article-card">
+                <div class="rank">5</div>
+                <div class="content">
+                    <a href="https://github.com/matthartman/ghost-pepper" class="title" target="_blank">Show HN: Ghost Pepper – Local hold-to-talk speech-to-text for macOS</a>
+                    <div class="meta">
+                        <span class="badge badge-hn">
+                            Hacker News
+                        </span>
+                        <div class="stats">
+                            <span>↑ 324</span>
+                            <span>💬 140</span>
+                        </div>
+                        <span class="score-info">Engagement: 534.0</span>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="article-card">
+                <div class="rank">6</div>
+                <div class="content">
+                    <a href="https://krebsonsecurity.com/2026/04/germany-doxes-unkn-head-of-ru-ransomware-gangs-revil-gandcrab/" class="title" target="_blank">German police name alleged leaders of GandCrab and REvil ransomware groups</a>
+                    <div class="meta">
+                        <span class="badge badge-hn">
+                            Hacker News
+                        </span>
+                        <div class="stats">
+                            <span>↑ 281</span>
+                            <span>💬 139</span>
+                        </div>
+                        <span class="score-info">Engagement: 489.5</span>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="article-card">
+                <div class="rank">7</div>
+                <div class="content">
+                    <a href="https://www.stephendiehl.com/posts/no_antimimetics/" class="title" target="_blank">Book review: There Is No Antimemetics Division</a>
+                    <div class="meta">
+                        <span class="badge badge-hn">
+                            Hacker News
+                        </span>
+                        <div class="stats">
+                            <span>↑ 229</span>
+                            <span>💬 166</span>
+                        </div>
+                        <span class="score-info">Engagement: 478.0</span>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="article-card">
+                <div class="rank">8</div>
+                <div class="content">
+                    <a href="https://www.freestyle.sh/" class="title" target="_blank">Launch HN: Freestyle – Sandboxes for Coding Agents</a>
+                    <div class="meta">
+                        <span class="badge badge-hn">
+                            Hacker News
+                        </span>
+                        <div class="stats">
+                            <span>↑ 241</span>
+                            <span>💬 132</span>
+                        </div>
+                        <span class="score-info">Engagement: 439.0</span>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="article-card">
+                <div class="rank">9</div>
+                <div class="content">
+                    <a href="https://www.showbiz411.com/2026/04/05/itunes-takeover-by-fake-ai-singer-eddie-dalton-now-occupies-eleven-spots-on-chart-despite-not-being-human-or-real-exclusive" class="title" target="_blank">AI singer now occupies eleven spots on iTunes singles chart</a>
+                    <div class="meta">
+                        <span class="badge badge-hn">
+                            Hacker News
+                        </span>
+                        <div class="stats">
+                            <span>↑ 134</span>
+                            <span>💬 198</span>
+                        </div>
+                        <span class="score-info">Engagement: 431.0</span>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="article-card">
+                <div class="rank">10</div>
+                <div class="content">
+                    <a href="https://www.govauctions.app/" class="title" target="_blank">Show HN: GovAuctions lets you browse government auctions at once</a>
+                    <div class="meta">
+                        <span class="badge badge-hn">
+                            Hacker News
+                        </span>
+                        <div class="stats">
+                            <span>↑ 258</span>
+                            <span>💬 74</span>
+                        </div>
+                        <span class="score-info">Engagement: 369.0</span>
+                    </div>
+                    
+                </div>
+            </div>
+            
+        </main>
+
+        <footer>
+            <p>Generated on Tuesday, 07 April 2026 at 11:20 &bull; Considered 40 articles before deduplication</p>
+            <p>&copy; 2025 Weekly Tech Digest Scraper</p>
+        </footer>
+    </div>
+</body>
+</html>

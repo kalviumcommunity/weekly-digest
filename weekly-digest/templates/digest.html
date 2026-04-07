@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Tech Digest</title>
+    <style>
+        :root {
+            --hn-color: #ff6600;
+            --dev-color: #3b49df;
+            --bg-color: #ffffff;
+            --border-color: #e0e0e0;
+            --text-main: #2d3436;
+            --text-muted: #636e72;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 20px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            color: var(--text-main);
+        }
+
+        header p {
+            color: var(--text-muted);
+            margin: 10px 0 0;
+        }
+
+        .article-card {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: flex-start;
+            transition: transform 0.2s ease;
+        }
+
+        .article-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .rank {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-muted);
+            margin-right: 20px;
+            min-width: 30px;
+        }
+
+        .content {
+            flex-grow: 1;
+        }
+
+        .title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0 0 10px 0;
+            display: block;
+            text-decoration: none;
+            color: var(--text-main);
+        }
+
+        .title:hover {
+            color: var(--dev-color);
+        }
+
+        .meta {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .badge {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .badge-hn { background-color: var(--hn-color); }
+        .badge-dev { background-color: var(--dev-color); }
+
+        .stats {
+            display: flex;
+            gap: 12px;
+        }
+
+        .score-info {
+            font-size: 0.85rem;
+            font-style: italic;
+            color: var(--text-muted);
+        }
+
+        .tags {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tag-pill {
+            background-color: #f0f2f5;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        footer {
+            margin-top: 60px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Weekly Tech Digest</h1>
+            <p>Generated on {{ generated_at }}</p>
+        </header>
+
+        <main>
+            {% for article in articles %}
+            <div class="article-card">
+                <div class="rank">{{ loop.index }}</div>
+                <div class="content">
+                    <a href="{{ article.url }}" class="title" target="_blank">{{ article.title }}</a>
+                    <div class="meta">
+                        <span class="badge {% if article.platform == 'Hacker News' %}badge-hn{% else %}badge-dev{% endif %}">
+                            {{ article.platform }}
+                        </span>
+                        <div class="stats">
+                            <span>↑ {{ article.votes }}</span>
+                            <span>💬 {{ article.comments }}</span>
+                        </div>
+                        <span class="score-info">Engagement: {{ article.engagement_score|round(1) }}</span>
+                    </div>
+                    {% if article.tags %}
+                    <div class="tags">
+                        {% for tag in article.tags[:5] %}
+                        <span class="tag-pill">#{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </main>
+
+        <footer>
+            <p>Generated on {{ generated_at }} &bull; Considered {{ total_considered }} articles before deduplication</p>
+            <p>&copy; 2025 Weekly Tech Digest Scraper</p>
+        </footer>
+    </div>
+</body>
+</html>
